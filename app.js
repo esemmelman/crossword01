@@ -7,7 +7,6 @@ const entries = new Map(), cells = new Map();
 const at = (p,i) => [p.r+(p.d?i:0),p.c+(p.d?0:i)].join(',');
 const displayAnswer = word => word.answer;
 const isCorrect = id => placed.get(id)===id;
-const strikeText = text => text.replace(/\S/g,ch=>ch+'\u0336');
 function shuffle(items){const result=[...items];for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}return result;}
 function startPuzzle(nextSet=false){
  clearRejection();
@@ -41,7 +40,7 @@ function activate(id){
 }
 function render(){
  const bank=$('bank');bank.replaceChildren();bank.size=bankOrder.length;
- for(const p of bankOrder){const used=isCorrect(p.id),option=document.createElement('option');option.value=String(p.id);option.textContent=used?strikeText(p.english):p.english;option.className=used?'used':wrong===p.id?'wrong':'';option.setAttribute('aria-label',p.english+(used?', correct':''));option.selected=selected===p.id;bank.append(option);}
+ for(const p of bankOrder){const used=isCorrect(p.id),option=document.createElement('option');option.value=String(p.id);option.textContent=p.english;option.className=used?'used':wrong===p.id?'wrong':'';option.setAttribute('aria-label',p.english+(used?', correct':''));option.selected=selected===p.id;bank.append(option);}
  bank.value=selected===null?'':String(selected);
  const grid=$('grid');grid.replaceChildren();grid.style.gridTemplateColumns=`repeat(${cols},52px)`;
  const values=new Map();
@@ -57,7 +56,7 @@ function render(){
  }
  for(const [container,d] of [['across',0],['down',1]]){
   const list=$(container);list.replaceChildren();list.size=Math.max(2,clueOrders[d].length);for(const p of clueOrders[d]){
-   const option=document.createElement('option');option.value=String(p.id);option.lang='es';const correct=isCorrect(p.id);option.textContent=p.number+' '+(correct?strikeText(p.spanish):p.spanish);option.className=correct?'used':'';option.setAttribute('aria-label',p.number+' '+p.spanish+(correct?', correct':''));option.selected=active===p.id;list.append(option);
+   const option=document.createElement('option');option.value=String(p.id);option.lang='es';const correct=isCorrect(p.id);option.textContent=p.number+' '+p.spanish;option.className=correct?'used':'';option.setAttribute('aria-label',p.number+' '+p.spanish+(correct?', correct':''));option.selected=active===p.id;list.append(option);
   }
   list.value=active!==null&&entries.get(active).d===d?String(active):'';
  }
