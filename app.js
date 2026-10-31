@@ -49,7 +49,7 @@ function render(){
  for(const [container,d] of [['across',0],['down',1]]){
   $(container).replaceChildren();for(const p of PUZZLE.filter(p=>p.d===d)){
    const b=document.createElement('button');b.className=`clue${active===p.id?' active':''}`;b.setAttribute('aria-pressed',String(active===p.id));
-   const num=document.createElement('span');num.className='num';num.textContent=p.number;const clue=document.createElement('span');clue.lang='es';clue.textContent=p.spanish;const len=document.createElement('span');len.className='len';len.textContent=`(${p.answer.length})`;b.append(num,clue,len);
+   const num=document.createElement('span');num.className='num';num.textContent=p.number;const clue=document.createElement('span');clue.lang='es';clue.textContent=p.spanish;b.append(num,clue);
    if(placed.has(p.id)){const label=document.createElement('span');label.className='placed';label.textContent=entries.get(placed.get(p.id)).english;b.append(label);}
    b.onclick=()=>activate(p.id);wireDrop(b,[p.id]);$(container).append(b);
   }
