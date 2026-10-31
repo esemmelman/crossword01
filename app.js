@@ -2,7 +2,7 @@ const $ = id => document.getElementById(id);
 const placed = new Map();
 let selected = null, active = null, setIndex = 0, layoutIndex = -1;
 let wrong = null, rejectTimer = null;
-let PUZZLE = [], rows = 0, cols = 0, bankOrder = [];
+let PUZZLE = [], rows = 0, cols = 0, bankOrder = [], clueOrders = [[],[]];
 const entries = new Map(), cells = new Map();
 const at = (p,i) => [p.r+(p.d?i:0),p.c+(p.d?0:i)].join(',');
 const displayAnswer = word => word.answer;
@@ -11,7 +11,6 @@ const strikeText = text => text.replace(/\S/g,ch=>ch+'\u0336');
 function shuffle(items){const result=[...items];for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}return result;}
 function startPuzzle(nextSet=false){
  clearRejection();
- const previousBank=bankOrder.map(w=>w.id).join(',');
  if(nextSet){setIndex=(setIndex+1)%PUZZLE_SETS.length;layoutIndex=-1;}
  const set=PUZZLE_SETS[setIndex];
  const choices=set.layouts.map((_,i)=>i).filter(i=>i!==layoutIndex);
@@ -21,8 +20,8 @@ function startPuzzle(nextSet=false){
  for(const p of PUZZLE){entries.set(p.id,p);[...p.answer].forEach((_,i)=>{const k=at(p,i);if(!cells.has(k))cells.set(k,[]);cells.get(k).push(p.id);});}
  rows=Math.max(...PUZZLE.map(p=>p.r+(p.d?p.answer.length:1)));
  cols=Math.max(...PUZZLE.map(p=>p.c+(p.d?1:p.answer.length)));
- bankOrder=shuffle(PUZZLE);
- if(bankOrder.map(w=>w.id).join(',')===previousBank)bankOrder.push(bankOrder.shift());
+ bankOrder=[...PUZZLE].sort((a,b)=>a.english.localeCompare(b.english,'en',{sensitivity:'base'}));
+ clueOrders=[0,1].map(d=>{const ordered=PUZZLE.filter(p=>p.d===d),mixed=shuffle(ordered);if(mixed.length>1&&mixed.every((p,i)=>p.id===ordered[i].id))mixed.push(mixed.shift());return mixed;});
  render();if(window.resetCrosswordFit)window.resetCrosswordFit();
 }
 function say(text){$('feedback').textContent=text;}
@@ -57,7 +56,7 @@ function render(){
   grid.append(el);
  }
  for(const [container,d] of [['across',0],['down',1]]){
-  const list=$(container);list.replaceChildren();list.size=Math.max(2,PUZZLE.filter(p=>p.d===d).length);for(const p of PUZZLE.filter(p=>p.d===d)){
+  const list=$(container);list.replaceChildren();list.size=Math.max(2,clueOrders[d].length);for(const p of clueOrders[d]){
    const option=document.createElement('option');option.value=String(p.id);option.lang='es';const correct=isCorrect(p.id);option.textContent=p.number+' '+(correct?strikeText(p.spanish):p.spanish);option.className=correct?'used':'';option.setAttribute('aria-label',p.number+' '+p.spanish+(correct?', correct':''));option.selected=active===p.id;list.append(option);
   }
   list.value=active!==null&&entries.get(active).d===d?String(active):'';

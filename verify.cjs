@@ -38,6 +38,8 @@ function clickSpanish(p){const list=$(p.d?'down':'across');list.value=String(p.i
 function clickEnglish(p){$('bank').value=String(p.id);$('bank').onchange();}
 for(let setNumber=0;setNumber<7;setNumber++){
  expect(setIndex===setNumber,'Next skipped set');
+ expect(bankOrder.every((p,i)=>i===0||bankOrder[i-1].english.localeCompare(p.english,'en',{sensitivity:'base'})<=0),'Bank must be alphabetical');
+ for(const d of [0,1]){const numbered=PUZZLE.filter(p=>p.d===d);expect(clueOrders[d].length===numbered.length,'Missing clues');if(numbered.length>1)expect(clueOrders[d].some((p,i)=>p.id!==numbered[i].id),'Clue list must be shuffled');}
  const beforeLayout=layoutIndex,beforeBank=bankOrder.map(p=>p.id).join(','),initialFitResets=getFitResets();
  const originalClues=JSON.stringify([$('across').children.map(o=>o.textContent),$('down').children.map(o=>o.textContent)]);
  const first=PUZZLE[0],other=PUZZLE[1];
@@ -52,7 +54,7 @@ for(let setNumber=0;setNumber<7;setNumber++){
  expect(getFitResets()===initialFitResets,'Placement changed scaling');expect($('feedback').textContent==='','No placement status');
  expect(JSON.stringify([$('across').children.map(o=>o.textContent.split(String.fromCharCode(822)).join('')),$('down').children.map(o=>o.textContent.split(String.fromCharCode(822)).join(''))])===originalClues,'Spanish labels changed');
  for(const [listName,id] of [['bank',first.id],[first.d?'down':'across',first.id]]){const option=$(listName).children.find(o=>Number(o.value)===id);expect(option.className==='used'&&option.textContent.includes(String.fromCharCode(822)),'Correct pair must be gray and crossed out');}
- $('reset').onclick();expect(placed.size===0&&active===null&&selected===null,'Reset did not clear progress');expect(layoutIndex!==beforeLayout,'Reset did not randomize layout');expect(bankOrder.map(p=>p.id).join(',')!==beforeBank,'Reset did not shuffle bank');
+ $('reset').onclick();expect(placed.size===0&&active===null&&selected===null,'Reset did not clear progress');expect(layoutIndex!==beforeLayout,'Reset did not randomize layout');expect(bankOrder.map(p=>p.id).join(',')===beforeBank,'Reset changed alphabetical bank order');
  for(const p of PUZZLE){clickSpanish(p);clickEnglish(p);}
  expect(placed.size===PUZZLE.length,'Not all correct pairs filled');expect($('feedback').textContent==='','No completion status');
  for(const name of ['across','down'])for(const option of $(name).children){const p=entries.get(Number(option.value));expect(option.textContent.split(String.fromCharCode(822)).join('')===p.number+' '+p.spanish,'English appended to Spanish');expect(option.className==='used','Correct Spanish not crossed out');}
@@ -68,4 +70,4 @@ clickEnglish(PUZZLE[1]);clickSpanish(PUZZLE[2]);advance(1000);expect(active===PU
 clickEnglish(PUZZLE[3]);clickEnglish(PUZZLE[2]);advance(1000);expect(isCorrect(PUZZLE[2].id)&&selected===null&&wrong===null,'Correct retry did not cancel timer');
 `,context);
 const vocabulary=JSON.parse(fs.readFileSync('vocabulary.json','utf8'));assert.equal(vocabulary.length,69);
-console.log('PASS: all 168 layouts and seven sets; Spanish-first matching; uppercase placement; correct-pair gray strike-through; wrong-answer red flash for exactly 1000ms; deselection, retry, timer cancellation, stable layout, reset, Next, and final nine.');
+console.log('PASS: all 168 layouts and seven sets; Spanish-first matching; uppercase placement; correct-pair gray strike-through; wrong-answer red flash for exactly 1000ms; deselection, retry, timer cancellation, stable layout, alphabetical word bank, shuffled clues, reset, Next, and final nine.');
