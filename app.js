@@ -1,0 +1,64 @@
+const $ = id => document.getElementById(id);
+const placed = new Map();
+let selected = null, active = null, checked = false;
+const at = (p,i) => [p.r+(p.d?i:0),p.c+(p.d?0:i)].join(',');
+const entries = new Map(PUZZLE.map(p=>[p.id,p]));
+const rows = Math.max(...PUZZLE.map(p=>p.r+(p.d?p.answer.length:1)));
+const cols = Math.max(...PUZZLE.map(p=>p.c+(p.d?1:p.answer.length)));
+const cells = new Map();
+PUZZLE.forEach(p=>[...p.answer].forEach((_,i)=>{const k=at(p,i);if(!cells.has(k))cells.set(k,[]);cells.get(k).push(p.id);}));
+const bankOrder = [...PUZZLE].sort(()=>Math.random()-.5);
+function say(text){$('feedback').textContent=text;}
+function chooseWord(id){selected=selected===id?null:id;render();if(selected!==null)say(`Selected “${entries.get(id).english}”. Tap a clue or a square to place it.`);}
+function place(wordId,targetId){
+ const word=entries.get(wordId),target=entries.get(targetId);
+ if(!word||!target)return;
+ if(word.answer.length!==target.answer.length){say(`That space needs ${target.answer.length} letters. “${word.english}” has ${word.answer.length}. Try another place.`);return;}
+ for(const [slot,value] of placed)if(value===wordId)placed.delete(slot);
+ placed.set(targetId,wordId);active=targetId;selected=null;checked=false;render();say(`Placed “${word.english}”. Use Check answers when you're ready.`);
+}
+function target(ids,wordId){
+ if(ids.includes(active))return active;
+ const fitting=ids.filter(id=>entries.get(id).answer.length===entries.get(wordId).answer.length);
+ if(fitting.length===1)return fitting[0];
+ if(ids.length===1)return ids[0];
+ return null;
+}
+function activate(id){if(selected!==null){place(selected,id);return;}active=active===id?null:id;render();}
+function wireDrop(el,ids){
+ el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('dragover');e.dataTransfer.dropEffect='move';});
+ el.addEventListener('dragleave',()=>el.classList.remove('dragover'));
+ el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('dragover');const raw=e.dataTransfer.getData('text/plain');if(raw==='')return;const id=Number(raw);if(!entries.has(id))return;const slot=target(ids,id);if(slot===null){say('Choose the Across or Down clue first, then drop the word again.');return;}place(id,slot);});
+}
+function render(){
+ $('bank').replaceChildren();
+ for(const p of bankOrder){const used=[...placed.values()].includes(p.id),b=document.createElement('button');b.className=`word${used?' used':''}${selected===p.id?' selected':''}`;b.textContent=p.english;b.draggable=true;b.setAttribute('aria-pressed',String(selected===p.id));b.setAttribute('aria-label',`${p.english}${used?', placed; select to move':''}`);b.onclick=()=>chooseWord(p.id);b.ondragstart=e=>{e.dataTransfer.setData('text/plain',String(p.id));e.dataTransfer.effectAllowed='move';};$('bank').append(b);}
+ const grid=$('grid');grid.replaceChildren();grid.style.gridTemplateColumns=`repeat(${cols},minmax(22px,1fr))`;
+ const values=new Map();
+ for(const [slot,wordId] of placed){const p=entries.get(slot),w=entries.get(wordId);[...w.answer].forEach((ch,i)=>{const k=at(p,i);if(!values.has(k))values.set(k,[]);values.get(k).push(ch);});}
+ for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+  const k=`${r},${c}`,ids=cells.get(k),el=document.createElement(ids?'button':'div');el.className='cell';
+  if(!ids){el.classList.add('block');el.setAttribute('aria-hidden','true');grid.append(el);continue;}
+  const starts=PUZZLE.filter(p=>p.r===r&&p.c===c);if(starts.length){const num=document.createElement('small');num.textContent=starts[0].number;el.append(num);}
+  const letters=values.get(k)||[],conflict=new Set(letters).size>1;el.append(document.createTextNode(conflict?'•':letters[0]||''));
+  if(ids.includes(active))el.classList.add('highlight');
+  if(checked&&letters.length){const correct=ids.every(id=>!placed.has(id)||placed.get(id)===id);el.classList.add(correct?'correct':'wrong');}
+  el.setAttribute('aria-label',ids.map(id=>{const p=entries.get(id);return `${p.number} ${p.d?'Down':'Across'}, ${p.spanish}`;}).join('; ')+`, ${conflict?'conflicting letters':letters[0]||'empty'}`);
+  el.onclick=()=>{if(selected!==null){const id=target(ids,selected);if(id!==null)place(selected,id);else say('Select an Across or Down clue to choose the direction.');}else{const next=ids[(ids.indexOf(active)+1)%ids.length];active=next;render();}};
+  wireDrop(el,ids);grid.append(el);
+ }
+ for(const [container,d] of [['across',0],['down',1]]){
+  $(container).replaceChildren();for(const p of PUZZLE.filter(p=>p.d===d)){
+   const b=document.createElement('button');b.className=`clue${active===p.id?' active':''}`;b.setAttribute('aria-pressed',String(active===p.id));
+   const num=document.createElement('span');num.className='num';num.textContent=p.number;const clue=document.createElement('span');clue.lang='es';clue.textContent=p.spanish;const len=document.createElement('span');len.className='len';len.textContent=`(${p.answer.length})`;b.append(num,clue,len);
+   if(placed.has(p.id)){const label=document.createElement('span');label.className='placed';label.textContent=entries.get(placed.get(p.id)).english;b.append(label);}
+   b.onclick=()=>activate(p.id);wireDrop(b,[p.id]);$(container).append(b);
+  }
+ }
+ $('progress').textContent=`${placed.size} / 10 placed`;$('remaining').textContent=`${10-placed.size} remaining`;
+ const p=entries.get(active);$('active-clue').textContent=p?`${p.number} ${p.d?'Down ↓':'Across →'} · ${p.spanish} · ${p.answer.length} letters`:'Select a Spanish clue to highlight its squares.';
+}
+$('check').onclick=()=>{checked=true;render();const correct=[...placed].filter(([a,b])=>a===b).length;say(correct===10?'¡Excelente! All 10 answers are correct. You completed the crossword!':`${correct} of 10 correct. ${placed.size-correct} to try again, ${10-placed.size} still empty. Select a word to move it, or drag another word onto a clue.`);};
+$('reset').onclick=()=>{placed.clear();selected=null;active=null;checked=false;render();say('Fresh start! All ten words are back in the bank.');};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){selected=null;active=null;render();say('Selection cleared.');}});
+render();
