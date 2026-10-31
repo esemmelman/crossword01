@@ -5,7 +5,7 @@ class Element{
 }
 const elements=new Map();
 const document={getElementById:id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);},createElement:()=>new Element(),createTextNode:text=>({textContent:text}),addEventListener(){}};
-const context=vm.createContext({document,console});
+const context=vm.createContext({document,console,window:{}});
 vm.runInContext(fs.readFileSync('puzzle.js','utf8')+'\n'+fs.readFileSync('app.js','utf8'),context);
 vm.runInContext(`
 if(PUZZLE.length!==10)throw Error('Expected ten entries');

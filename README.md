@@ -7,3 +7,5 @@ One translation is chosen where the source lists alternatives. Infinitive answer
 `vocabulary.json` holds the ten source pairs. `node generate.cjs` generates a connected crossword in `puzzle.js`. The committed puzzle remains fixed until regenerated.
 
 Hosted with GitHub Pages from the root of `main`. Pushing to `main` automatically publishes changes.
+
+The activity automatically scales to the current browser viewport, including a 1920 × 1080 monitor at 150% scaling (1280 × 720 CSS screen pixels). All list entries stay visible; Start over sits below the first screen. No display popup is shown. Run `node verify-fit.cjs` to check fit calculations.

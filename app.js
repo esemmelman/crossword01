@@ -9,7 +9,7 @@ const cols = Math.max(...PUZZLE.map(p=>p.c+(p.d?1:p.answer.length)));
 const cells = new Map();
 PUZZLE.forEach(p=>[...p.answer].forEach((_,i)=>{const k=at(p,i);if(!cells.has(k))cells.set(k,[]);cells.get(k).push(p.id);}));
 const bankOrder = [...PUZZLE].sort(()=>Math.random()-.5);
-function say(text){$('feedback').textContent=text;}
+function say(text){$('feedback').textContent=text;if(window.fitCrossword)window.fitCrossword();}
 function chooseWord(id){selected=selected===id?null:id;render();if(selected!==null)say(`Selected “${entries.get(id).english}”. Click a crossword square to place it.`);}
 function place(wordId,targetId){
  const word=entries.get(wordId),target=entries.get(targetId);
@@ -27,7 +27,7 @@ function target(ids,wordId){
 }
 function activate(id){active=active===id?null:id;render();}
 function render(){
- const bank=$('bank');bank.replaceChildren();
+ const bank=$('bank');bank.replaceChildren();bank.size=bankOrder.length;
  for(const p of bankOrder){const used=[...placed.values()].includes(p.id),option=document.createElement('option');option.value=String(p.id);option.textContent=p.english+(used?' ✓':'');option.selected=selected===p.id;bank.append(option);}
  bank.value=selected===null?'':String(selected);
  const grid=$('grid');grid.replaceChildren();grid.style.gridTemplateColumns=`repeat(${cols},52px)`;
@@ -44,7 +44,7 @@ function render(){
   grid.append(el);
  }
  for(const [container,d] of [['across',0],['down',1]]){
-  const list=$(container);list.replaceChildren();for(const p of PUZZLE.filter(p=>p.d===d)){
+  const list=$(container);list.replaceChildren();list.size=Math.max(2,PUZZLE.filter(p=>p.d===d).length);for(const p of PUZZLE.filter(p=>p.d===d)){
    const option=document.createElement('option');option.value=String(p.id);option.lang='es';option.textContent=p.number+' '+p.spanish+(placed.has(p.id)?' — '+displayAnswer(entries.get(placed.get(p.id))):'');option.selected=active===p.id;list.append(option);
   }
   list.value=active!==null&&entries.get(active).d===d?String(active):'';
