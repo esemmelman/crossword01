@@ -32,8 +32,9 @@ function wireDrop(el,ids){
  el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('dragover');const raw=e.dataTransfer.getData('text/plain');if(raw==='')return;const id=Number(raw);if(!entries.has(id))return;const slot=target(ids,id);if(slot===null){say('Choose the Across or Down clue first, then drop the word again.');return;}place(id,slot);});
 }
 function render(){
- $('bank').replaceChildren();
- for(const p of bankOrder){const used=[...placed.values()].includes(p.id),b=document.createElement('button');b.className=`word${used?' used':''}${selected===p.id?' selected':''}`;b.textContent=p.english;b.draggable=true;b.setAttribute('aria-pressed',String(selected===p.id));b.setAttribute('aria-label',`${p.english}${used?', placed; select to move':''}`);b.onclick=()=>chooseWord(p.id);b.ondragstart=e=>{e.dataTransfer.setData('text/plain',String(p.id));e.dataTransfer.effectAllowed='move';};$('bank').append(b);}
+ const bank=$('bank');bank.replaceChildren();
+ for(const p of bankOrder){const used=[...placed.values()].includes(p.id),option=document.createElement('option');option.value=String(p.id);option.textContent=p.english+(used?' ✓':'');option.selected=selected===p.id;bank.append(option);}
+ bank.value=selected===null?'':String(selected);
  const grid=$('grid');grid.replaceChildren();grid.style.gridTemplateColumns=`repeat(${cols},40px)`;
  const values=new Map();
  for(const [slot,wordId] of placed){const p=entries.get(slot),w=entries.get(wordId);[...displayAnswer(w)].forEach((ch,i)=>{const k=at(p,i);if(!values.has(k))values.set(k,[]);if(slot===active)values.get(k).unshift(ch);else values.get(k).push(ch);});}
@@ -48,15 +49,21 @@ function render(){
   wireDrop(el,ids);grid.append(el);
  }
  for(const [container,d] of [['across',0],['down',1]]){
-  $(container).replaceChildren();for(const p of PUZZLE.filter(p=>p.d===d)){
-   const b=document.createElement('button');b.className=`clue${active===p.id?' active':''}`;b.setAttribute('aria-pressed',String(active===p.id));
-   const num=document.createElement('span');num.className='num';num.textContent=p.number;const clue=document.createElement('span');clue.lang='es';clue.textContent=p.spanish;b.append(num,clue);
-   if(placed.has(p.id)){const label=document.createElement('span');label.className='placed';label.textContent=entries.get(placed.get(p.id)).english;b.append(label);}
-   b.onclick=()=>activate(p.id);wireDrop(b,[p.id]);$(container).append(b);
+  const list=$(container);list.replaceChildren();for(const p of PUZZLE.filter(p=>p.d===d)){
+   const option=document.createElement('option');option.value=String(p.id);option.lang='es';option.textContent=p.number+' '+p.spanish+(placed.has(p.id)?' — '+displayAnswer(entries.get(placed.get(p.id))):'');option.selected=active===p.id;list.append(option);
   }
+  list.value=active!==null&&entries.get(active).d===d?String(active):'';
  }
-
 }
+$('bank').onchange=()=>{if($('bank').value!=='')chooseWord(Number($('bank').value));};
+$('bank').draggable=true;
+$('bank').ondragstart=e=>{const value=$('bank').value;if(value===''){e.preventDefault();return;}e.dataTransfer.setData('text/plain',value);e.dataTransfer.effectAllowed='move';};
+for(const name of ['across','down']){
+ const list=$(name);list.onchange=()=>{if(list.value!=='')activate(Number(list.value));};
+ list.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';});
+ list.addEventListener('drop',e=>{e.preventDefault();const raw=e.dataTransfer.getData('text/plain'),slot=e.target.tagName==='OPTION'?e.target.value:list.value;if(raw!==''&&slot!=='')place(Number(raw),Number(slot));else say('Select a clue in the list, then drop the word.');});
+}
+
 $('reset').onclick=()=>{placed.clear();selected=null;active=null;render();say('Fresh start! All ten words are back in the bank.');};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){selected=null;active=null;render();say('Selection cleared.');}});
 render();

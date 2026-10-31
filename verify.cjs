@@ -15,7 +15,7 @@ for(const p of PUZZLE)for(let i=0;i<p.answer.length;i++){
 }
 const seen=new Set([PUZZLE[0].id]);let changed=true;while(changed){changed=false;for(const ids of cells.values())if(ids.some(id=>seen.has(id)))for(const id of ids)if(!seen.has(id)){seen.add(id);changed=true;}}
 if(seen.size!==10)throw Error('Disconnected grid');
-const first=PUZZLE[0];chooseWord(first.id);activate(first.id);if(placed.get(first.id)!==first.id)throw Error('Click placement failed');
+const first=PUZZLE[0];$('bank').value=String(first.id);$('bank').onchange();const firstList=$(first.d?'down':'across');firstList.value=String(first.id);firstList.onchange();if(placed.get(first.id)!==first.id)throw Error('Click placement failed');
 $('reset').onclick();
 for(const p of PUZZLE){const el=new (document.createElement('button').constructor)();wireDrop(el,[p.id]);el.handlers.drop({preventDefault(){},dataTransfer:{getData:()=>String(p.id)}});}
 if(!$('feedback').textContent.includes('All 10'))throw Error('Completion failed');
