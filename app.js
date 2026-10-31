@@ -30,7 +30,7 @@ function render(){
  const bank=$('bank');bank.replaceChildren();
  for(const p of bankOrder){const used=[...placed.values()].includes(p.id),option=document.createElement('option');option.value=String(p.id);option.textContent=p.english+(used?' ✓':'');option.selected=selected===p.id;bank.append(option);}
  bank.value=selected===null?'':String(selected);
- const grid=$('grid');grid.replaceChildren();grid.style.gridTemplateColumns=`repeat(${cols},40px)`;
+ const grid=$('grid');grid.replaceChildren();grid.style.gridTemplateColumns=`repeat(${cols},52px)`;
  const values=new Map();
  for(const [slot,wordId] of placed){const p=entries.get(slot),w=entries.get(wordId);[...displayAnswer(w)].forEach((ch,i)=>{const k=at(p,i);if(!values.has(k))values.set(k,[]);if(slot===active)values.get(k).unshift(ch);else values.get(k).push(ch);});}
  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
