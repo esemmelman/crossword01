@@ -1,10 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap');
 :root{--ink:#243c35;--green:#28634d;--paper:#f5f3eb;--line:#a9b9ac}
 *{box-sizing:border-box;font-weight:700}
+html,body{overflow:clip;overflow-anchor:none}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:30px}
 main{padding:8px}
 .activity{height:calc(100dvh - 16px);display:flex;flex-direction:column;gap:8px}
-#fit-area{flex:1;min-height:0;overflow:hidden}
+#fit-area{flex:1;min-height:0;overflow:clip;overflow-anchor:none}
 .workspace{display:grid;width:max-content;grid-template-columns:min-content repeat(2,max-content);gap:10px;align-items:start;transform-origin:top left;visibility:hidden}
 .puzzle-panel{min-width:0}
 .clue-stack{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
