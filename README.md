@@ -1,6 +1,6 @@
 # Spanish crossword
 
-Native desktop list boxes with Spanish Across/Down clues and an English word bank. Select an English answer, then click a crossword square to place it. Grid answers use uppercase letters with no spaces. Used answers are struck through in the bank and remain available to move.
+Native desktop list boxes with Spanish Across/Down clues and an English word bank. Select an English answer, then click a crossword square to place it. Grid answers use uppercase letters with no spaces. Correct answers and their Spanish clues are struck through and grayed out in both lists. Incorrect placements stay unmarked; moving a correct answer restores its clue and bank entry. Answers remain available to move.
 
 Vocabulary comes from all 69 entries of [span020](https://github.com/esemmelman/span020), preserving the original order. One English translation is chosen where the source offers alternatives.
 

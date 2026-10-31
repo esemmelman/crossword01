@@ -42,7 +42,8 @@ for(let setNumber=0;setNumber<7;setNumber++){
  $('grid').children[first.r*cols+first.c].onclick();expect(placed.get(first.id)===first.id,'Square click failed');
  expect(getFitResets()===initialFitResets,'Placement requested new font scaling');
  expect($('feedback').textContent==='','Placement status must remain empty');
- expect(JSON.stringify([$('across').children.map(o=>o.textContent),$('down').children.map(o=>o.textContent)])===originalClues,'Spanish clues changed after placement');
+ expect(JSON.stringify([$('across').children.map(o=>o.textContent.split(String.fromCharCode(822)).join('')),$('down').children.map(o=>o.textContent.split(String.fromCharCode(822)).join(''))])===originalClues,'Spanish clues changed after placement');
+ const correctClue=$(first.d?'down':'across').children.find(option=>Number(option.value)===first.id);expect(correctClue.className==='used'&&correctClue.textContent.includes(String.fromCharCode(822)),'Correct Spanish clue not crossed out');
  const used=$('bank').children.find(option=>Number(option.value)===first.id);
  expect(used.className==='used'&&used.textContent.includes(String.fromCharCode(822))&&!used.textContent.includes('✓'),'Used word must be struck through');
  $('reset').onclick();expect(placed.size===0&&selected===null&&active===null,'Reset did not clear state');
@@ -53,12 +54,20 @@ for(let setNumber=0;setNumber<7;setNumber++){
   const r=p.r+(p.d?j:0),c=p.c+(p.d?0:j);$('grid').children[r*cols+c].onclick();
  }
  expect(placed.size===PUZZLE.length,'Completion failed');expect($('feedback').textContent==='','Completion must not show status');
- for(const name of ['across','down'])for(const option of $(name).children){const p=entries.get(Number(option.value));expect(option.textContent===p.number+' '+p.spanish,'English appended to Spanish clue');}
+ for(const name of ['across','down'])for(const option of $(name).children){const p=entries.get(Number(option.value));expect(option.textContent.split(String.fromCharCode(822)).join('')===p.number+' '+p.spanish,'English appended to Spanish clue');expect(option.className==='used','Correct Spanish clue must be gray and struck through');}
  for(const square of $('grid').children)for(const child of square.children)if(typeof child.textContent==='string')expect(!/[a-z]/.test(child.textContent),'Grid must be uppercase');
  const usedCount=$('bank').children.filter(option=>option.className==='used').length;expect(usedCount===PUZZLE.length,'Not all words marked used');
  $('next').onclick();expect(placed.size===0&&selected===null&&active===null,'Next retained progress');
 }
 expect(setIndex===0&&PUZZLE.length===10,'Next did not wrap to first group');
+let pair=null;for(const p of PUZZLE){const q=PUZZLE.find(w=>w.id!==p.id&&w.answer.length===p.answer.length);if(q){pair=[p,q];break;}}
+expect(pair,'Expected same-length pair');
+const [wrongWord,wrongSlot]=pair;place(wrongWord.id,wrongSlot.id);
+expect(!$('bank').children.some(o=>o.className==='used'),'Wrong answer crossed out in English');
+expect(!$(wrongSlot.d?'down':'across').children.find(o=>Number(o.value)===wrongSlot.id).className,'Wrong answer crossed out in Spanish');
+place(wrongWord.id,wrongWord.id);expect($('bank').children.find(o=>Number(o.value)===wrongWord.id).className==='used','Corrected answer did not cross out');
+place(wrongWord.id,wrongSlot.id);expect(!$('bank').children.some(o=>o.className==='used'),'Moving a correct word did not restore English');expect(!$(wrongWord.d?'down':'across').children.find(o=>Number(o.value)===wrongWord.id).className,'Moving a correct word did not restore Spanish');
+$('reset').onclick();
 const a=PUZZLE[0],b=PUZZLE.find(p=>p.answer.length!==a.answer.length);place(a.id,b.id);expect(placed.size===0,'Wrong length accepted');
 `,context);
 const vocabulary=JSON.parse(fs.readFileSync('vocabulary.json','utf8'));assert.equal(vocabulary.length,69);
