@@ -55,7 +55,7 @@ function render(){
    b.onclick=()=>activate(p.id);wireDrop(b,[p.id]);$(container).append(b);
   }
  }
- $('progress').textContent=`${placed.size} / 10 placed`;$('remaining').textContent=`${10-placed.size} remaining`;
+
  const p=entries.get(active);$('active-clue').textContent=p?`${p.number} ${p.d?'Down ↓':'Across →'} · ${p.spanish} · ${p.answer.length} letters`:'Select a Spanish clue to highlight its squares.';
 }
 $('check').onclick=()=>{checked=true;render();const correct=[...placed].filter(([a,b])=>a===b).length;say(correct===10?'¡Excelente! All 10 answers are correct. You completed the crossword!':`${correct} of 10 correct. ${placed.size-correct} to try again, ${10-placed.size} still empty. Select a word to move it, or drag another word onto a clue.`);};

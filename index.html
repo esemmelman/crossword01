@@ -1,11 +1,20 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Practice the first ten words from span020 with a Spanish-to-English drag-and-drop crossword."><title>Trail of Words · Spanish Crossword</title><link rel="stylesheet" href="style.css"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Practice the first ten words from span020 with a Spanish-to-English drag-and-drop crossword."><title>Spanish Crossword</title><link rel="stylesheet" href="style.css"></head>
 <body>
-<header><div class="brand">✳ &nbsp; TRAIL OF WORDS</div><span>SPAN020 &nbsp; / &nbsp; PUZZLE 01</span></header>
 <main>
 <div class="workspace">
-<aside class="bank-panel"><div class="panel-heading"><h2>Word bank</h2><span id="remaining">10 words</span></div><p class="small">Drag a word, or select it and tap a clue or a square. Spaces don’t take a square.</p><div id="bank" aria-label="English answer bank"></div><div class="bank-footer">ES → EN <span>Explore. Translate. Connect.</span></div></aside>
-<section class="puzzle-panel" aria-label="Crossword puzzle"><div class="panel-heading"><h2>Your crossword</h2><span id="progress">0 / 10 placed</span></div><div class="grid-scroll"><div id="grid" role="group" aria-label="Crossword grid"></div></div><div id="active-clue">Select a Spanish clue to highlight its squares.</div><div class="actions"><button id="check" class="primary">Check answers</button><button id="reset">Start over</button></div><p id="feedback" role="status" aria-live="polite">Ready for a little adventure?</p><div class="clues"><div><h3>Across →</h3><div id="across"></div></div><div><h3>Down ↓</h3><div id="down"></div></div></div></section>
-</div><footer>Vocabulary from the first 10 entries of <a href="https://github.com/esemmelman/span020">span020</a> · One English translation per clue.</footer></main>
+<section class="puzzle-panel" aria-label="Crossword puzzle">
+<div class="grid-scroll"><div id="grid" role="group" aria-label="Crossword grid"></div></div>
+<div id="active-clue">Select a Spanish clue to highlight its squares.</div>
+<div class="actions"><button id="check" class="primary">Check answers</button><button id="reset">Start over</button></div>
+<p id="feedback" role="status" aria-live="polite">Ready for a little adventure?</p>
+</section>
+<aside class="bank-panel" aria-label="Word bank"><div id="bank" aria-label="English answer bank"></div></aside>
+<section class="clues" aria-label="Spanish clues">
+<div><h3>Across →</h3><div id="across"></div></div>
+<div><h3>Down ↓</h3><div id="down"></div></div>
+</section>
+</div>
+</main>
 <script src="puzzle.js"></script><script src="app.js"></script></body></html>

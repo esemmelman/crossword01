@@ -12,3 +12,18 @@ button{font:inherit;cursor:pointer;color:inherit;border:1px solid #cdd5cd;backgr
 @media(max-width:1050px){header{font-size:18px;padding:20px}.brand{font-size:22px}main{padding:20px 16px}.workspace{grid-template-columns:1fr}.bank-panel{position:static;padding:24px}#bank{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.word{margin:0}.bank-footer{display:none}.puzzle-panel{padding:20px}}
 @media(max-width:560px){#bank{grid-template-columns:1fr}.clues{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:no-preference){button{transition:background .15s,border-color .15s}}
+
+/* Keep the activity in reading order: grid, answer bank, Spanish clues. */
+main{max-width:none;margin:0;padding:12px}
+.workspace{grid-template-columns:minmax(690px,1.2fr) 310px minmax(310px,1fr);gap:18px}
+.puzzle-panel{padding:0;border:0;background:transparent}
+.grid-scroll{margin:0 0 20px;padding:0}
+#grid{margin:0;max-width:none}
+.bank-panel{padding:12px;position:static}
+.clues{border:0;padding:0;grid-template-columns:1fr;gap:20px}
+.clues h3{margin:0 0 10px;font-size:28px}
+.clue{margin:0 0 6px}
+@media(min-width:1850px){.clues{grid-template-columns:1fr 1fr}.workspace{grid-template-columns:minmax(690px,1.2fr) 310px minmax(600px,1fr)}}
+@media(max-width:1350px) and (min-width:1051px){.workspace{grid-template-columns:minmax(690px,1fr) 310px}.clues{grid-column:1 / -1;grid-template-columns:1fr 1fr}}
+@media(max-width:1050px){main{padding:12px}.workspace{grid-template-columns:minmax(0,1fr)}.bank-panel{padding:12px}.puzzle-panel{padding:0}.clues{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.clues{grid-template-columns:1fr}}
