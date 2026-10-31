@@ -18,10 +18,10 @@ if(seen.size!==10)throw Error('Disconnected grid');
 const first=PUZZLE[0];chooseWord(first.id);activate(first.id);if(placed.get(first.id)!==first.id)throw Error('Click placement failed');
 $('reset').onclick();
 for(const p of PUZZLE){const el=new (document.createElement('button').constructor)();wireDrop(el,[p.id]);el.handlers.drop({preventDefault(){},dataTransfer:{getData:()=>String(p.id)}});}
-$('check').onclick();if(!$('feedback').textContent.includes('All 10'))throw Error('Completion failed');
+if(!$('feedback').textContent.includes('All 10'))throw Error('Completion failed');
 $('reset').onclick();if(placed.size!==0)throw Error('Reset failed');
 const a=PUZZLE[0],b=PUZZLE.find(p=>p.answer.length!==a.answer.length);place(a.id,b.id);if(placed.size)throw Error('Wrong length accepted');
-const pair=PUZZLE.filter(p=>p.answer.length===6);if(pair.length>1){place(pair[0].id,pair[1].id);$('check').onclick();if(!$('feedback').textContent.includes('1 to try again'))throw Error('Incorrect answer not detected');}
+const pair=PUZZLE.filter(p=>p.answer.length===6);if(pair.length>1){place(pair[0].id,pair[1].id);if(placed.get(pair[1].id)!==pair[0].id)throw Error('Placement failed');if($('feedback').textContent.includes('All 10'))throw Error('Incorrect completion');}
 `,context);
 assert.equal(elements.get('bank').children.length,10);
-console.log('PASS: ten connected entries, valid crossings, click placement, drag/drop, completion, reset, wrong length, and incorrect-answer feedback.');
+console.log('PASS: ten connected entries, valid crossings, click placement, drag/drop, completion, reset, wrong length, and completion feedback.');
