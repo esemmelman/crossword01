@@ -1,20 +1,14 @@
 <!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Practice the first ten words from span020 with a Spanish-to-English drag-and-drop crossword."><title>Spanish Crossword</title><link rel="stylesheet" href="style.css"></head>
-<body>
-<main>
-<div class="workspace">
+<body><main><div class="workspace">
 <section class="puzzle-panel" aria-label="Crossword puzzle">
 <div class="grid-scroll"><div id="grid" role="group" aria-label="Crossword grid"></div></div>
 <div id="active-clue">Select a Spanish clue to highlight its squares.</div>
 <div class="actions"><button id="check" class="primary">Check answers</button><button id="reset">Start over</button></div>
 <p id="feedback" role="status" aria-live="polite">Ready for a little adventure?</p>
 </section>
-<aside class="bank-panel" aria-label="Word bank"><div id="bank" aria-label="English answer bank"></div></aside>
-<section class="clues" aria-label="Spanish clues">
-<div><h3>Across →</h3><div id="across"></div></div>
-<div><h3>Down ↓</h3><div id="down"></div></div>
-</section>
-</div>
-</main>
-<script src="puzzle.js"></script><script src="app.js"></script></body></html>
+<aside class="list-panel bank-panel" aria-label="Word bank"><div id="bank" class="list-box" role="group" aria-label="English answer bank"></div></aside>
+<section class="list-panel" aria-labelledby="across-heading"><h3 id="across-heading">Across →</h3><div id="across" class="list-box" role="group" aria-label="Across clues"></div></section>
+<section class="list-panel" aria-labelledby="down-heading"><h3 id="down-heading">Down ↓</h3><div id="down" class="list-box" role="group" aria-label="Down clues"></div></section>
+</div></main><script src="puzzle.js"></script><script src="app.js"></script></body></html>
