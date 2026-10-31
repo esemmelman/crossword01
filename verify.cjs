@@ -15,13 +15,13 @@ for(const p of PUZZLE)for(let i=0;i<p.answer.length;i++){
 }
 const seen=new Set([PUZZLE[0].id]);let changed=true;while(changed){changed=false;for(const ids of cells.values())if(ids.some(id=>seen.has(id)))for(const id of ids)if(!seen.has(id)){seen.add(id);changed=true;}}
 if(seen.size!==10)throw Error('Disconnected grid');
-const first=PUZZLE[0];$('bank').value=String(first.id);$('bank').onchange();const firstList=$(first.d?'down':'across');firstList.value=String(first.id);firstList.onchange();if(placed.get(first.id)!==first.id)throw Error('Click placement failed');
+const first=PUZZLE[0];$('bank').value=String(first.id);$('bank').onchange();const firstList=$(first.d?'down':'across');firstList.value=String(first.id);firstList.onchange();if(placed.size)throw Error('Clue selection must not place an answer');$('grid').children[first.r*cols+first.c].onclick();if(placed.get(first.id)!==first.id)throw Error('Click placement failed');
 $('reset').onclick();
-for(const p of PUZZLE){const el=new (document.createElement('button').constructor)();wireDrop(el,[p.id]);el.handlers.drop({preventDefault(){},dataTransfer:{getData:()=>String(p.id)}});}
+for(const p of PUZZLE){$('bank').value=String(p.id);$('bank').onchange();active=p.id;const i=Array.from(p.answer).findIndex((_,j)=>cells.get(at(p,j)).length===1);const j=i<0?0:i;const r=p.r+(p.d?j:0),c=p.c+(p.d?0:j);$('grid').children[r*cols+c].onclick();}
 if(!$('feedback').textContent.includes('All 10'))throw Error('Completion failed');
 $('reset').onclick();if(placed.size!==0)throw Error('Reset failed');
 const a=PUZZLE[0],b=PUZZLE.find(p=>p.answer.length!==a.answer.length);place(a.id,b.id);if(placed.size)throw Error('Wrong length accepted');
 const pair=PUZZLE.filter(p=>p.answer.length===6);if(pair.length>1){place(pair[0].id,pair[1].id);if(placed.get(pair[1].id)!==pair[0].id)throw Error('Placement failed');if($('feedback').textContent.includes('All 10'))throw Error('Incorrect completion');}
 `,context);
 assert.equal(elements.get('bank').children.length,10);
-console.log('PASS: ten connected entries, valid crossings, click placement, drag/drop, completion, reset, wrong length, and completion feedback.');
+console.log('PASS: ten connected entries, valid crossings, native word selection, square-click placement, completion, reset, wrong length, and completion feedback.');

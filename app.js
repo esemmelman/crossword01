@@ -10,7 +10,7 @@ const cells = new Map();
 PUZZLE.forEach(p=>[...p.answer].forEach((_,i)=>{const k=at(p,i);if(!cells.has(k))cells.set(k,[]);cells.get(k).push(p.id);}));
 const bankOrder = [...PUZZLE].sort(()=>Math.random()-.5);
 function say(text){$('feedback').textContent=text;}
-function chooseWord(id){selected=selected===id?null:id;render();if(selected!==null)say(`Selected “${entries.get(id).english}”. Tap a clue or a square to place it.`);}
+function chooseWord(id){selected=selected===id?null:id;render();if(selected!==null)say(`Selected “${entries.get(id).english}”. Click a crossword square to place it.`);}
 function place(wordId,targetId){
  const word=entries.get(wordId),target=entries.get(targetId);
  if(!word||!target)return;
@@ -25,12 +25,7 @@ function target(ids,wordId){
  if(ids.length===1)return ids[0];
  return null;
 }
-function activate(id){if(selected!==null){place(selected,id);return;}active=active===id?null:id;render();}
-function wireDrop(el,ids){
- el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('dragover');e.dataTransfer.dropEffect='move';});
- el.addEventListener('dragleave',()=>el.classList.remove('dragover'));
- el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('dragover');const raw=e.dataTransfer.getData('text/plain');if(raw==='')return;const id=Number(raw);if(!entries.has(id))return;const slot=target(ids,id);if(slot===null){say('Choose the Across or Down clue first, then drop the word again.');return;}place(id,slot);});
-}
+function activate(id){active=active===id?null:id;render();}
 function render(){
  const bank=$('bank');bank.replaceChildren();
  for(const p of bankOrder){const used=[...placed.values()].includes(p.id),option=document.createElement('option');option.value=String(p.id);option.textContent=p.english+(used?' ✓':'');option.selected=selected===p.id;bank.append(option);}
@@ -46,7 +41,7 @@ function render(){
   if(ids.includes(active))el.classList.add('highlight');
   el.setAttribute('aria-label',ids.map(id=>{const p=entries.get(id);return `${p.number} ${p.d?'Down':'Across'}, ${p.spanish}`;}).join('; ')+`, ${conflict?'conflicting letters':letters[0]||'empty'}`);
   el.onclick=()=>{if(selected!==null){const id=target(ids,selected);if(id!==null)place(selected,id);else say('Select an Across or Down clue to choose the direction.');}else{const next=ids[(ids.indexOf(active)+1)%ids.length];active=next;render();}};
-  wireDrop(el,ids);grid.append(el);
+  grid.append(el);
  }
  for(const [container,d] of [['across',0],['down',1]]){
   const list=$(container);list.replaceChildren();for(const p of PUZZLE.filter(p=>p.d===d)){
@@ -56,12 +51,8 @@ function render(){
  }
 }
 $('bank').onchange=()=>{if($('bank').value!=='')chooseWord(Number($('bank').value));};
-$('bank').draggable=true;
-$('bank').ondragstart=e=>{const value=$('bank').value;if(value===''){e.preventDefault();return;}e.dataTransfer.setData('text/plain',value);e.dataTransfer.effectAllowed='move';};
 for(const name of ['across','down']){
  const list=$(name);list.onchange=()=>{if(list.value!=='')activate(Number(list.value));};
- list.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';});
- list.addEventListener('drop',e=>{e.preventDefault();const raw=e.dataTransfer.getData('text/plain'),slot=e.target.tagName==='OPTION'?e.target.value:list.value;if(raw!==''&&slot!=='')place(Number(raw),Number(slot));else say('Select a clue in the list, then drop the word.');});
 }
 
 $('reset').onclick=()=>{placed.clear();selected=null;active=null;render();say('Fresh start! All ten words are back in the bank.');};
