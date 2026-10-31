@@ -1,6 +1,6 @@
 # Spanish crossword
 
-Native desktop list boxes with Spanish Across/Down clues and an English word bank. Select an English answer, then click a crossword square to place it. Grid answers use uppercase letters with no spaces. Correct answers and their Spanish clues are struck through and grayed out in both lists. Incorrect placements stay unmarked; moving a correct answer restores its clue and bank entry. Answers remain available to move.
+Native desktop list boxes with Spanish Across/Down clues and an English word bank. Select a Spanish clue, then select its English translation in the word bank. Correct matches fill the crossword automatically. Incorrect English selections flash red for one second, then deselect; the Spanish clue stays selected so you can try again. Grid answers use uppercase letters with no spaces. Correct answers and their Spanish clues are struck through and grayed out in both lists. Incorrect matches never enter the grid. Correct matches remain grayed out until Start over or Next.
 
 Vocabulary comes from all 69 entries of [span020](https://github.com/esemmelman/span020), preserving the original order. One English translation is chosen where the source offers alternatives.
 
@@ -12,4 +12,4 @@ Open `index.html` or serve this directory with any static server. No build or in
 
 `vocabulary.json` stores the 69 source pairs. `node generate.cjs` generates 24 distinct connected layouts per group into `puzzle.js`; the browser picks a different cached layout on each reset for an immediate response.
 
-Run `node verify.cjs` for all 168 layouts, grouping, placement, capitalization, used-word styling, randomization, progression, silent placement, fixed scaling, and reset behavior. Run `node verify-fit.cjs` for viewport-fit calculations and control placement. These are automated structure and interaction checks; they do not replace browser visual inspection.
+Run `node verify.cjs` for all 168 layouts, grouping, Spanish-first matching, the one-second error timer, capitalization, correct-pair styling, randomization, progression, silent placement, fixed scaling, and reset behavior. Run `node verify-fit.cjs` for viewport-fit calculations and control placement. These are automated structure and interaction checks; they do not replace browser visual inspection.

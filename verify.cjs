@@ -5,7 +5,9 @@ class Element{
 }
 const elements=new Map();
 const document={getElementById:id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);},createElement:()=>new Element(),createTextNode:text=>({textContent:text}),addEventListener(){}};
-let fitResets=0;const context=vm.createContext({document,console,window:{resetCrosswordFit:()=>fitResets++},getFitResets:()=>fitResets});
+let fitResets=0,clock=0,timerId=0;const timers=new Map();
+function advance(ms){const until=clock+ms;while(true){const next=[...timers].filter(([,t])=>t.at<=until).sort((a,b)=>a[1].at-b[1].at)[0];if(!next)break;clock=next[1].at;timers.delete(next[0]);next[1].callback();}clock=until;}
+const context=vm.createContext({document,console,window:{resetCrosswordFit:()=>fitResets++,setTimeout:(callback,delay)=>{const id=++timerId;timers.set(id,{callback,at:clock+delay});return id;},clearTimeout:id=>timers.delete(id)},getFitResets:()=>fitResets,advance});
 vm.runInContext(fs.readFileSync('puzzle.js','utf8')+'\n'+fs.readFileSync('app.js','utf8'),context);
 vm.runInContext(`
 function expect(value,message){if(!value)throw Error(message);}
@@ -32,43 +34,38 @@ for(const [setNumber,set] of PUZZLE_SETS.entries()){
   const signature=puzzle.map(p=>[p.id,p.r,p.c,p.d].join(',')).join(';');expect(!signatures.has(signature),'Repeated layout');signatures.add(signature);
  }
 }
+function clickSpanish(p){const list=$(p.d?'down':'across');list.value=String(p.id);list.onchange();}
+function clickEnglish(p){$('bank').value=String(p.id);$('bank').onchange();}
 for(let setNumber=0;setNumber<7;setNumber++){
- expect(setIndex===setNumber,'Next skipped a set');
- const beforeLayout=layoutIndex,beforeBank=bankOrder.map(p=>p.id).join(',');
- const initialFitResets=getFitResets();const originalClues=JSON.stringify([$ ('across').children.map(o=>o.textContent),$('down').children.map(o=>o.textContent)]);
- const first=PUZZLE[0];$('bank').value=String(first.id);$('bank').onchange();
- const firstList=$(first.d?'down':'across');firstList.value=String(first.id);firstList.onchange();
- expect(placed.size===0,'Clue selection must not place an answer');
- $('grid').children[first.r*cols+first.c].onclick();expect(placed.get(first.id)===first.id,'Square click failed');
- expect(getFitResets()===initialFitResets,'Placement requested new font scaling');
- expect($('feedback').textContent==='','Placement status must remain empty');
- expect(JSON.stringify([$('across').children.map(o=>o.textContent.split(String.fromCharCode(822)).join('')),$('down').children.map(o=>o.textContent.split(String.fromCharCode(822)).join(''))])===originalClues,'Spanish clues changed after placement');
- const correctClue=$(first.d?'down':'across').children.find(option=>Number(option.value)===first.id);expect(correctClue.className==='used'&&correctClue.textContent.includes(String.fromCharCode(822)),'Correct Spanish clue not crossed out');
- const used=$('bank').children.find(option=>Number(option.value)===first.id);
- expect(used.className==='used'&&used.textContent.includes(String.fromCharCode(822))&&!used.textContent.includes('✓'),'Used word must be struck through');
- $('reset').onclick();expect(placed.size===0&&selected===null&&active===null,'Reset did not clear state');
- expect(layoutIndex!==beforeLayout,'Reset reused layout');expect(bankOrder.map(p=>p.id).join(',')!==beforeBank,'Reset reused bank order');
- for(const p of PUZZLE){
-  $('bank').value=String(p.id);$('bank').onchange();active=p.id;
-  const found=Array.from(p.answer).findIndex((_,j)=>cells.get(at(p,j)).length===1),j=found<0?0:found;
-  const r=p.r+(p.d?j:0),c=p.c+(p.d?0:j);$('grid').children[r*cols+c].onclick();
- }
- expect(placed.size===PUZZLE.length,'Completion failed');expect($('feedback').textContent==='','Completion must not show status');
- for(const name of ['across','down'])for(const option of $(name).children){const p=entries.get(Number(option.value));expect(option.textContent.split(String.fromCharCode(822)).join('')===p.number+' '+p.spanish,'English appended to Spanish clue');expect(option.className==='used','Correct Spanish clue must be gray and struck through');}
- for(const square of $('grid').children)for(const child of square.children)if(typeof child.textContent==='string')expect(!/[a-z]/.test(child.textContent),'Grid must be uppercase');
- const usedCount=$('bank').children.filter(option=>option.className==='used').length;expect(usedCount===PUZZLE.length,'Not all words marked used');
- $('next').onclick();expect(placed.size===0&&selected===null&&active===null,'Next retained progress');
+ expect(setIndex===setNumber,'Next skipped set');
+ const beforeLayout=layoutIndex,beforeBank=bankOrder.map(p=>p.id).join(','),initialFitResets=getFitResets();
+ const originalClues=JSON.stringify([$('across').children.map(o=>o.textContent),$('down').children.map(o=>o.textContent)]);
+ const first=PUZZLE[0],other=PUZZLE[1];
+ clickEnglish(first);expect(placed.size===0&&selected===null,'English first must not place or remain selected');
+ clickSpanish(first);expect(placed.size===0&&active===first.id,'Spanish must select clue without placing');
+ clickEnglish(other);expect(placed.size===0&&wrong===other.id&&selected===other.id,'Incorrect match must not fill crossword');
+ expect($('bank').children.find(o=>Number(o.value)===other.id).className==='wrong','Wrong English must be red');
+ advance(999);expect(wrong===other.id&&selected===other.id,'Red flash ended before one second');
+ advance(1);expect(wrong===null&&selected===null&&$('bank').value==='','Wrong English must deselect at one second');
+ expect(active===first.id,'Keep Spanish selected for retry');
+ clickEnglish(first);expect(placed.get(first.id)===first.id&&active===null&&selected===null,'Correct pair did not fill crossword');
+ expect(getFitResets()===initialFitResets,'Placement changed scaling');expect($('feedback').textContent==='','No placement status');
+ expect(JSON.stringify([$('across').children.map(o=>o.textContent.split(String.fromCharCode(822)).join('')),$('down').children.map(o=>o.textContent.split(String.fromCharCode(822)).join(''))])===originalClues,'Spanish labels changed');
+ for(const [listName,id] of [['bank',first.id],[first.d?'down':'across',first.id]]){const option=$(listName).children.find(o=>Number(o.value)===id);expect(option.className==='used'&&option.textContent.includes(String.fromCharCode(822)),'Correct pair must be gray and crossed out');}
+ $('reset').onclick();expect(placed.size===0&&active===null&&selected===null,'Reset did not clear progress');expect(layoutIndex!==beforeLayout,'Reset did not randomize layout');expect(bankOrder.map(p=>p.id).join(',')!==beforeBank,'Reset did not shuffle bank');
+ for(const p of PUZZLE){clickSpanish(p);clickEnglish(p);}
+ expect(placed.size===PUZZLE.length,'Not all correct pairs filled');expect($('feedback').textContent==='','No completion status');
+ for(const name of ['across','down'])for(const option of $(name).children){const p=entries.get(Number(option.value));expect(option.textContent.split(String.fromCharCode(822)).join('')===p.number+' '+p.spanish,'English appended to Spanish');expect(option.className==='used','Correct Spanish not crossed out');}
+ for(const square of $('grid').children){expect(!square.onclick,'Grid clicks must not place answers');for(const child of square.children)if(typeof child.textContent==='string')expect(!/[a-z]/.test(child.textContent),'Grid must be uppercase');}
+ expect($('bank').children.every(o=>o.className==='used'),'Correct English not crossed out');
+ $('next').onclick();expect(placed.size===0&&active===null&&selected===null,'Next retained progress');
 }
-expect(setIndex===0&&PUZZLE.length===10,'Next did not wrap to first group');
-let pair=null;for(const p of PUZZLE){const q=PUZZLE.find(w=>w.id!==p.id&&w.answer.length===p.answer.length);if(q){pair=[p,q];break;}}
-expect(pair,'Expected same-length pair');
-const [wrongWord,wrongSlot]=pair;place(wrongWord.id,wrongSlot.id);
-expect(!$('bank').children.some(o=>o.className==='used'),'Wrong answer crossed out in English');
-expect(!$(wrongSlot.d?'down':'across').children.find(o=>Number(o.value)===wrongSlot.id).className,'Wrong answer crossed out in Spanish');
-place(wrongWord.id,wrongWord.id);expect($('bank').children.find(o=>Number(o.value)===wrongWord.id).className==='used','Corrected answer did not cross out');
-place(wrongWord.id,wrongSlot.id);expect(!$('bank').children.some(o=>o.className==='used'),'Moving a correct word did not restore English');expect(!$(wrongWord.d?'down':'across').children.find(o=>Number(o.value)===wrongWord.id).className,'Moving a correct word did not restore Spanish');
-$('reset').onclick();
-const a=PUZZLE[0],b=PUZZLE.find(p=>p.answer.length!==a.answer.length);place(a.id,b.id);expect(placed.size===0,'Wrong length accepted');
+expect(setIndex===0&&PUZZLE.length===10,'Next did not wrap');
+// Timers from a previous attempt must never change a new clue, answer, or puzzle.
+clickSpanish(PUZZLE[0]);clickEnglish(PUZZLE[1]);$('reset').onclick();clickSpanish(PUZZLE[0]);advance(1000);expect(active===PUZZLE[0].id&&wrong===null,'Old timer changed reset puzzle');
+clickEnglish(PUZZLE[1]);$('next').onclick();clickSpanish(PUZZLE[0]);advance(1000);expect(active===PUZZLE[0].id&&wrong===null,'Old timer changed next set');
+clickEnglish(PUZZLE[1]);clickSpanish(PUZZLE[2]);advance(1000);expect(active===PUZZLE[2].id&&wrong===null,'Old timer changed new Spanish selection');
+clickEnglish(PUZZLE[3]);clickEnglish(PUZZLE[2]);advance(1000);expect(isCorrect(PUZZLE[2].id)&&selected===null&&wrong===null,'Correct retry did not cancel timer');
 `,context);
 const vocabulary=JSON.parse(fs.readFileSync('vocabulary.json','utf8'));assert.equal(vocabulary.length,69);
-console.log('PASS: 168 connected unique layouts, all seven source groups, native selection and square clicks, uppercase answers, strike-through, randomized reset, Next progression, final nine, wraparound, silent placement, stable clue labels and scaling, and wrong-length feedback.');
+console.log('PASS: all 168 layouts and seven sets; Spanish-first matching; uppercase placement; correct-pair gray strike-through; wrong-answer red flash for exactly 1000ms; deselection, retry, timer cancellation, stable layout, reset, Next, and final nine.');
