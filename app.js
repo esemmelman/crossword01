@@ -3,6 +3,7 @@ const placed = new Map();
 let selected = null, active = null;
 const at = (p,i) => [p.r+(p.d?i:0),p.c+(p.d?0:i)].join(',');
 const entries = new Map(PUZZLE.map(p=>[p.id,p]));
+const displayAnswer = word => word.english.split(/\s+/).map(part=>part.charAt(0).toUpperCase()+part.slice(1).toLowerCase()).join('').replace(/[^a-z]/gi,'');
 const rows = Math.max(...PUZZLE.map(p=>p.r+(p.d?p.answer.length:1)));
 const cols = Math.max(...PUZZLE.map(p=>p.c+(p.d?1:p.answer.length)));
 const cells = new Map();
@@ -35,12 +36,12 @@ function render(){
  for(const p of bankOrder){const used=[...placed.values()].includes(p.id),b=document.createElement('button');b.className=`word${used?' used':''}${selected===p.id?' selected':''}`;b.textContent=p.english;b.draggable=true;b.setAttribute('aria-pressed',String(selected===p.id));b.setAttribute('aria-label',`${p.english}${used?', placed; select to move':''}`);b.onclick=()=>chooseWord(p.id);b.ondragstart=e=>{e.dataTransfer.setData('text/plain',String(p.id));e.dataTransfer.effectAllowed='move';};$('bank').append(b);}
  const grid=$('grid');grid.replaceChildren();grid.style.gridTemplateColumns=`repeat(${cols},40px)`;
  const values=new Map();
- for(const [slot,wordId] of placed){const p=entries.get(slot),w=entries.get(wordId);[...w.answer].forEach((ch,i)=>{const k=at(p,i);if(!values.has(k))values.set(k,[]);values.get(k).push(ch);});}
+ for(const [slot,wordId] of placed){const p=entries.get(slot),w=entries.get(wordId);[...displayAnswer(w)].forEach((ch,i)=>{const k=at(p,i);if(!values.has(k))values.set(k,[]);if(slot===active)values.get(k).unshift(ch);else values.get(k).push(ch);});}
  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
   const k=`${r},${c}`,ids=cells.get(k),el=document.createElement(ids?'button':'div');el.className='cell';
   if(!ids){el.classList.add('block');el.setAttribute('aria-hidden','true');grid.append(el);continue;}
   const starts=PUZZLE.filter(p=>p.r===r&&p.c===c);if(starts.length){const num=document.createElement('small');num.textContent=starts[0].number;el.append(num);}
-  const letters=values.get(k)||[],conflict=new Set(letters).size>1;el.append(document.createTextNode(conflict?'•':letters[0]||''));
+  const letters=values.get(k)||[],conflict=new Set(letters.map(ch=>ch.toUpperCase())).size>1;el.append(document.createTextNode(conflict?'•':letters[0]||''));
   if(ids.includes(active))el.classList.add('highlight');
   el.setAttribute('aria-label',ids.map(id=>{const p=entries.get(id);return `${p.number} ${p.d?'Down':'Across'}, ${p.spanish}`;}).join('; ')+`, ${conflict?'conflicting letters':letters[0]||'empty'}`);
   el.onclick=()=>{if(selected!==null){const id=target(ids,selected);if(id!==null)place(selected,id);else say('Select an Across or Down clue to choose the direction.');}else{const next=ids[(ids.indexOf(active)+1)%ids.length];active=next;render();}};
