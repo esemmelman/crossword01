@@ -1,11 +1,15 @@
-# Trail of Words — Spanish crossword
+# Spanish crossword
 
-Click-to-place crossword using exactly the first ten Spanish entries in [span020](https://github.com/esemmelman/span020). Spanish clues; The crossword sits on the far left, followed by native desktop list boxes for the Across clues, Down clues, and English answer bank. Select an answer from the word bank, then click a grid square to place it. Across and Down selections highlight the corresponding entry. Includes tap/click and keyboard button alternatives, automatic completion feedback, restart, and responsive layout.
+Native desktop list boxes with Spanish Across/Down clues and an English word bank. Select an English answer, then click a crossword square to place it. Grid answers use uppercase letters with no spaces. Used answers are struck through in the bank and remain available to move.
 
-One translation is chosen where the source lists alternatives. Infinitive answers retain “to”; spaces are omitted in the grid. No login, build, or installation is needed. Open `index.html` or serve this directory with any static server.
+Vocabulary comes from all 69 entries of [span020](https://github.com/esemmelman/span020), preserving the original order. One English translation is chosen where the source offers alternatives.
 
-`vocabulary.json` holds the ten source pairs. `node generate.cjs` generates a connected crossword in `puzzle.js`. The committed puzzle remains fixed until regenerated.
+- **Start over** clears progress, chooses a different connected crossword layout for the current set, and reshuffles the word bank.
+- **Next** loads the next consecutive ten entries. The last group has nine entries (61–69), then Next returns to the first group.
+- The crossword, enlarged lists, status, Start over, and Next fit the available browser viewport, including 1920 × 1080 at 150% scaling. Resolution/scaling are inspected silently. No popup or sign-in is needed.
 
-Hosted with GitHub Pages from the root of `main`. Pushing to `main` automatically publishes changes.
+Open `index.html` or serve this directory with any static server. No build or installation is needed. GitHub Pages publishes the root of `main` automatically on push.
 
-The activity automatically scales to the current browser viewport, including a 1920 × 1080 monitor at 150% scaling (1280 × 720 CSS screen pixels). All list entries stay visible; Start over sits below the first screen. No display popup is shown. Run `node verify-fit.cjs` to check fit calculations.
+`vocabulary.json` stores the 69 source pairs. `node generate.cjs` generates 24 distinct connected layouts per group into `puzzle.js`; the browser picks a different cached layout on each reset for an immediate response.
+
+Run `node verify.cjs` for all 168 layouts, grouping, placement, capitalization, used-word styling, randomization, progression, completion, and reset behavior. Run `node verify-fit.cjs` for viewport-fit calculations and control placement. These are automated structure and interaction checks; they do not replace browser visual inspection.

@@ -1,12 +1,278 @@
 [
-  {"spanish":"acercarse a","english":"to approach"},
-  {"spanish":"andar","english":"to walk"},
-  {"spanish":"dar un paseo","english":"to take a walk"},
-  {"spanish":"dejar de","english":"to stop"},
-  {"spanish":"escalar","english":"to climb"},
-  {"spanish":"perderse","english":"to get lost"},
-  {"spanish":"refugiarse","english":"to take shelter"},
-  {"spanish":"el bosque","english":"forest"},
-  {"spanish":"el desierto","english":"desert"},
-  {"spanish":"hermoso, -a","english":"beautiful"}
+  {
+    "spanish": "acercarse a",
+    "english": "to approach"
+  },
+  {
+    "spanish": "andar",
+    "english": "to walk"
+  },
+  {
+    "spanish": "dar un paseo",
+    "english": "to take a walk"
+  },
+  {
+    "spanish": "dejar de",
+    "english": "to stop"
+  },
+  {
+    "spanish": "escalar",
+    "english": "to climb"
+  },
+  {
+    "spanish": "perderse",
+    "english": "to get lost"
+  },
+  {
+    "spanish": "refugiarse",
+    "english": "to take shelter"
+  },
+  {
+    "spanish": "el bosque",
+    "english": "forest"
+  },
+  {
+    "spanish": "el desierto",
+    "english": "desert"
+  },
+  {
+    "spanish": "hermoso, -a",
+    "english": "beautiful"
+  },
+  {
+    "spanish": "la naturaleza",
+    "english": "nature"
+  },
+  {
+    "spanish": "el paisaje",
+    "english": "landscape"
+  },
+  {
+    "spanish": "el refugio",
+    "english": "shelter"
+  },
+  {
+    "spanish": "la roca",
+    "english": "rock"
+  },
+  {
+    "spanish": "la sierra",
+    "english": "mountain range"
+  },
+  {
+    "spanish": "el valle",
+    "english": "valley"
+  },
+  {
+    "spanish": "los binoculares",
+    "english": "binoculars"
+  },
+  {
+    "spanish": "la brújula",
+    "english": "compass"
+  },
+  {
+    "spanish": "la linterna",
+    "english": "flashlight"
+  },
+  {
+    "spanish": "el repelente de insectos",
+    "english": "insect repellent"
+  },
+  {
+    "spanish": "el saco de dormir",
+    "english": "sleeping bag"
+  },
+  {
+    "spanish": "la tienda de acampar",
+    "english": "tent"
+  },
+  {
+    "spanish": "caer granizo",
+    "english": "to hail"
+  },
+  {
+    "spanish": "el granizo",
+    "english": "hail"
+  },
+  {
+    "spanish": "el relámpago",
+    "english": "lightning"
+  },
+  {
+    "spanish": "el trueno",
+    "english": "thunder"
+  },
+  {
+    "spanish": "suceder",
+    "english": "to occur"
+  },
+  {
+    "spanish": "tener lugar",
+    "english": "to take place"
+  },
+  {
+    "spanish": "al amanecer",
+    "english": "at dawn"
+  },
+  {
+    "spanish": "al anochecer",
+    "english": "at dusk"
+  },
+  {
+    "spanish": "al principio",
+    "english": "at the beginning"
+  },
+  {
+    "spanish": "un rato",
+    "english": "a while"
+  },
+  {
+    "spanish": "una vez allí",
+    "english": "once there"
+  },
+  {
+    "spanish": "el entrenamiento",
+    "english": "training"
+  },
+  {
+    "spanish": "entrenarse",
+    "english": "to train"
+  },
+  {
+    "spanish": "hacer un esfuerzo",
+    "english": "to make an effort"
+  },
+  {
+    "spanish": "inscribirse",
+    "english": "to register"
+  },
+  {
+    "spanish": "la inscripción",
+    "english": "registration"
+  },
+  {
+    "spanish": "alcanzar",
+    "english": "to reach"
+  },
+  {
+    "spanish": "la carrera",
+    "english": "race"
+  },
+  {
+    "spanish": "la ceremonia",
+    "english": "ceremony"
+  },
+  {
+    "spanish": "el certificado",
+    "english": "certificate"
+  },
+  {
+    "spanish": "contra",
+    "english": "against"
+  },
+  {
+    "spanish": "eliminar",
+    "english": "to eliminate"
+  },
+  {
+    "spanish": "la entrega de premios",
+    "english": "awards ceremony"
+  },
+  {
+    "spanish": "¡Felicitaciones!",
+    "english": "Congratulations"
+  },
+  {
+    "spanish": "la medalla",
+    "english": "medal"
+  },
+  {
+    "spanish": "la meta",
+    "english": "goal"
+  },
+  {
+    "spanish": "obtener",
+    "english": "to obtain"
+  },
+  {
+    "spanish": "el / la participante",
+    "english": "participant"
+  },
+  {
+    "spanish": "el / la representante",
+    "english": "representative"
+  },
+  {
+    "spanish": "salir campeón, campeona",
+    "english": "to become the champion"
+  },
+  {
+    "spanish": "el trofeo",
+    "english": "trophy"
+  },
+  {
+    "spanish": "vencer",
+    "english": "to beat"
+  },
+  {
+    "spanish": "animado, -a",
+    "english": "excited"
+  },
+  {
+    "spanish": "asustar",
+    "english": "to scare"
+  },
+  {
+    "spanish": "darse cuenta de",
+    "english": "to realize"
+  },
+  {
+    "spanish": "desafortunadamente",
+    "english": "unfortunately"
+  },
+  {
+    "spanish": "desanimado, -a",
+    "english": "discouraged"
+  },
+  {
+    "spanish": "duro, -a",
+    "english": "hard"
+  },
+  {
+    "spanish": "emocionarse",
+    "english": "to be moved"
+  },
+  {
+    "spanish": "estar orgulloso / orgullosa de",
+    "english": "to be proud of"
+  },
+  {
+    "spanish": "impresionar",
+    "english": "to impress"
+  },
+  {
+    "spanish": "pasarlo bien / mal",
+    "english": "to have a good time"
+  },
+  {
+    "spanish": "aparecer",
+    "english": "to appear"
+  },
+  {
+    "spanish": "así",
+    "english": "this way"
+  },
+  {
+    "spanish": "hacia",
+    "english": "toward"
+  },
+  {
+    "spanish": "perder el equilibrio",
+    "english": "to lose one's balance"
+  },
+  {
+    "spanish": "sin embargo",
+    "english": "however"
+  }
 ]

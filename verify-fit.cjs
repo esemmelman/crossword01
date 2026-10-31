@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const source = fs.readFileSync('fit.js', 'utf8');
-// 1280 x 720 screen at 150%, with space reserved for browser chrome and status.
+// 1280 x 720 screen at 150%, with browser chrome, status, and both buttons reserved.
 for (const [width,height] of [[1264,570],[1264,490],[1904,880],[1008,430]]) {
  const area = {clientWidth:width,clientHeight:height};
  const workspace = {offsetWidth:1950,offsetHeight:850,style:{}};
@@ -24,4 +24,6 @@ for (const [width,height] of [[1264,570],[1264,490],[1904,880],[1008,430]]) {
 const html=fs.readFileSync('index.html','utf8');
 assert.ok(!html.includes('display.js'));
 assert.ok(html.indexOf('id="reset"')>html.indexOf('id="feedback"'));
-console.log('PASS: viewport fit at 150% scaling, smaller browser areas, resizing, and longer labels; popup removed.');
+assert.ok(html.includes('<button id="next">Next</button>'));
+assert.ok(html.indexOf('id="next"')<html.indexOf('</main>'));
+console.log('PASS: viewport fit at 150% scaling, smaller browser areas, resizing, and longer labels; both buttons in activity; popup removed.');
