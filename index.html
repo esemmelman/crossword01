@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Practice the first ten words from span020 with a Spanish-to-English click-to-place crossword."><title>Spanish Crossword</title><link rel="stylesheet" href="style.css"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Practice vocabulary from span020 with a Spanish-to-English click-to-place crossword."><title>Spanish Crossword</title><link rel="stylesheet" href="style.css"></head>
 <body><main><div class="activity"><div id="fit-area"><div id="workspace" class="workspace">
 <section class="puzzle-panel" aria-label="Crossword puzzle">
 <div class="grid-scroll"><div id="grid" role="group" aria-label="Crossword grid"></div></div>
+<div class="actions"><button id="reset">Start over</button><button id="next">Next</button></div>
 </section>
 <section class="list-panel" aria-labelledby="across-heading"><h3 id="across-heading">Across →</h3><select id="across" class="list-box" size="10" aria-label="Across clues"></select></section>
 <section class="list-panel" aria-labelledby="down-heading"><h3 id="down-heading">Down ↓</h3><select id="down" class="list-box" size="10" aria-label="Down clues"></select></section>
 <aside class="list-panel bank-panel" aria-label="Word bank"><select id="bank" class="list-box" size="10" aria-label="English answer bank"></select></aside>
-</div></div><p id="feedback" role="status" aria-live="polite"></p><div class="actions"><button id="reset">Start over</button><button id="next">Next</button><span id="set-range"></span></div></div></main><script src="puzzle.js"></script><script src="app.js"></script><script src="fit.js"></script></body></html>
+</div></div><p id="feedback" class="sr-only" role="status" aria-live="polite"></p></div></main><script src="puzzle.js"></script><script src="app.js"></script><script src="fit.js"></script></body></html>

@@ -19,17 +19,16 @@ function startPuzzle(nextSet=false){
  cols=Math.max(...PUZZLE.map(p=>p.c+(p.d?1:p.answer.length)));
  bankOrder=shuffle(PUZZLE);
  if(bankOrder.map(w=>w.id).join(',')===previousBank)bankOrder.push(bankOrder.shift());
- $('set-range').textContent='Words '+set.start+'–'+set.end+' of 69';
- render();if(window.fitCrossword)window.fitCrossword();
+ render();if(window.resetCrosswordFit)window.resetCrosswordFit();
 }
-function say(text){$('feedback').textContent=text;if(window.fitCrossword)window.fitCrossword();}
-function chooseWord(id){selected=selected===id?null:id;render();if(selected!==null)say(`Selected “${entries.get(id).english}”. Click a crossword square to place it.`);}
+function say(text){$('feedback').textContent=text;}
+function chooseWord(id){selected=selected===id?null:id;render();say('');}
 function place(wordId,targetId){
  const word=entries.get(wordId),target=entries.get(targetId);
  if(!word||!target)return;
  if(word.answer.length!==target.answer.length){say(`That space needs ${target.answer.length} letters. “${word.english}” has ${word.answer.length}. Try another place.`);return;}
  for(const [slot,value] of placed)if(value===wordId)placed.delete(slot);
- placed.set(targetId,wordId);active=targetId;selected=null;render();say(placed.size===PUZZLE.length&&[...placed].every(([slot,id])=>slot===id)?'¡Excelente! All '+PUZZLE.length+' answers are correct. You completed the crossword!':`Placed “${word.english}”.`);
+ placed.set(targetId,wordId);active=targetId;selected=null;render();say('');
 }
 function target(ids,wordId){
  const fitting=ids.filter(id=>entries.get(id).answer.length===entries.get(wordId).answer.length);
@@ -58,7 +57,7 @@ function render(){
  }
  for(const [container,d] of [['across',0],['down',1]]){
   const list=$(container);list.replaceChildren();list.size=Math.max(2,PUZZLE.filter(p=>p.d===d).length);for(const p of PUZZLE.filter(p=>p.d===d)){
-   const option=document.createElement('option');option.value=String(p.id);option.lang='es';option.textContent=p.number+' '+p.spanish+(placed.has(p.id)?' — '+displayAnswer(entries.get(placed.get(p.id))):'');option.selected=active===p.id;list.append(option);
+   const option=document.createElement('option');option.value=String(p.id);option.lang='es';option.textContent=p.number+' '+p.spanish;option.selected=active===p.id;list.append(option);
   }
   list.value=active!==null&&entries.get(active).d===d?String(active):'';
  }
@@ -68,7 +67,7 @@ for(const name of ['across','down']){
  const list=$(name);list.onchange=()=>{if(list.value!=='')activate(Number(list.value));};
 }
 
-$('reset').onclick=()=>{startPuzzle();say('New layout. All answers are back in the bank.');};
-$('next').onclick=()=>{startPuzzle(true);say('Loaded '+$('set-range').textContent.toLowerCase()+'.');};
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){selected=null;active=null;render();say('Selection cleared.');}});
+$('reset').onclick=()=>{startPuzzle();say('');};
+$('next').onclick=()=>{startPuzzle(true);say('');};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){selected=null;active=null;render();say('');}});
 startPuzzle();

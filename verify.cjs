@@ -5,7 +5,7 @@ class Element{
 }
 const elements=new Map();
 const document={getElementById:id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);},createElement:()=>new Element(),createTextNode:text=>({textContent:text}),addEventListener(){}};
-const context=vm.createContext({document,console,window:{}});
+let fitResets=0;const context=vm.createContext({document,console,window:{resetCrosswordFit:()=>fitResets++},getFitResets:()=>fitResets});
 vm.runInContext(fs.readFileSync('puzzle.js','utf8')+'\n'+fs.readFileSync('app.js','utf8'),context);
 vm.runInContext(`
 function expect(value,message){if(!value)throw Error(message);}
@@ -35,10 +35,14 @@ for(const [setNumber,set] of PUZZLE_SETS.entries()){
 for(let setNumber=0;setNumber<7;setNumber++){
  expect(setIndex===setNumber,'Next skipped a set');
  const beforeLayout=layoutIndex,beforeBank=bankOrder.map(p=>p.id).join(',');
+ const initialFitResets=getFitResets();const originalClues=JSON.stringify([$ ('across').children.map(o=>o.textContent),$('down').children.map(o=>o.textContent)]);
  const first=PUZZLE[0];$('bank').value=String(first.id);$('bank').onchange();
  const firstList=$(first.d?'down':'across');firstList.value=String(first.id);firstList.onchange();
  expect(placed.size===0,'Clue selection must not place an answer');
  $('grid').children[first.r*cols+first.c].onclick();expect(placed.get(first.id)===first.id,'Square click failed');
+ expect(getFitResets()===initialFitResets,'Placement requested new font scaling');
+ expect($('feedback').textContent==='','Placement status must remain empty');
+ expect(JSON.stringify([$('across').children.map(o=>o.textContent),$('down').children.map(o=>o.textContent)])===originalClues,'Spanish clues changed after placement');
  const used=$('bank').children.find(option=>Number(option.value)===first.id);
  expect(used.className==='used'&&used.textContent.includes(String.fromCharCode(822))&&!used.textContent.includes('✓'),'Used word must be struck through');
  $('reset').onclick();expect(placed.size===0&&selected===null&&active===null,'Reset did not clear state');
@@ -48,7 +52,8 @@ for(let setNumber=0;setNumber<7;setNumber++){
   const found=Array.from(p.answer).findIndex((_,j)=>cells.get(at(p,j)).length===1),j=found<0?0:found;
   const r=p.r+(p.d?j:0),c=p.c+(p.d?0:j);$('grid').children[r*cols+c].onclick();
  }
- expect($('feedback').textContent.includes('All '+PUZZLE.length),'Completion failed');
+ expect(placed.size===PUZZLE.length,'Completion failed');expect($('feedback').textContent==='','Completion must not show status');
+ for(const name of ['across','down'])for(const option of $(name).children){const p=entries.get(Number(option.value));expect(option.textContent===p.number+' '+p.spanish,'English appended to Spanish clue');}
  for(const square of $('grid').children)for(const child of square.children)if(typeof child.textContent==='string')expect(!/[a-z]/.test(child.textContent),'Grid must be uppercase');
  const usedCount=$('bank').children.filter(option=>option.className==='used').length;expect(usedCount===PUZZLE.length,'Not all words marked used');
  $('next').onclick();expect(placed.size===0&&selected===null&&active===null,'Next retained progress');
@@ -57,4 +62,4 @@ expect(setIndex===0&&PUZZLE.length===10,'Next did not wrap to first group');
 const a=PUZZLE[0],b=PUZZLE.find(p=>p.answer.length!==a.answer.length);place(a.id,b.id);expect(placed.size===0,'Wrong length accepted');
 `,context);
 const vocabulary=JSON.parse(fs.readFileSync('vocabulary.json','utf8'));assert.equal(vocabulary.length,69);
-console.log('PASS: 168 connected unique layouts, all seven source groups, native selection and square clicks, uppercase answers, strike-through, randomized reset, Next progression, final nine, wraparound, completion, and wrong-length feedback.');
+console.log('PASS: 168 connected unique layouts, all seven source groups, native selection and square clicks, uppercase answers, strike-through, randomized reset, Next progression, final nine, wraparound, silent placement, stable clue labels and scaling, and wrong-length feedback.');
